@@ -1131,6 +1131,10 @@ open class EventNotificationManager : EventNotificationManagerInterface {
             builder.addAction(snoozeAction)
         }
 
+        // Show the first three configured presets directly on the phone notification.
+        // The remaining presets are still exposed through the snooze picker and Wear OS.
+        builder.addAction(defaultSnooze0Action)
+
         val extender =
                 NotificationCompat.WearableExtender()
                         .addAction(defaultSnooze0Action)
@@ -1170,6 +1174,9 @@ open class EventNotificationManager : EventNotificationManagerInterface {
             val action = actionBuilder.build()
             builder.addAction(action)
             extender.addAction(action)
+            if (idx < 3) {
+                builder.addAction(action)
+            }
         }
 
         if (!notificationSettings.behavior.allowNotificationSwipe) {
