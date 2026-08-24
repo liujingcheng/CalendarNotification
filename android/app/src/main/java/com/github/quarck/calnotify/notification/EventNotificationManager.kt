@@ -1126,11 +1126,6 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                         defaultSnooze0PendingIntent
                 ).build()
 
-        if (!notificationSettings.behavior.notificationOpensSnooze) {
-            DevLog.debug(LOG_TAG, "adding pending intent for snooze, event id ${event.eventId}, notificationId ${event.notificationId}")
-            builder.addAction(snoozeAction)
-        }
-
         // Show the first three configured presets directly on the phone notification.
         // The remaining presets are still exposed through the snooze picker and Wear OS.
         builder.addAction(defaultSnooze0Action)
@@ -1138,69 +1133,6 @@ open class EventNotificationManager : EventNotificationManagerInterface {
         val extender =
                 NotificationCompat.WearableExtender()
                         .addAction(defaultSnooze0Action)
-
-        if ((notificationSettings.behavior.enableNotificationMute && !event.isTask) || event.isMuted) {
-            // build and append
-
-            val muteTogglePendingIntent =
-                    pendingServiceIntent(ctx,
-                            defaultMuteToggleIntent(
-                                    ctx,
-                                    event.eventId,
-                                    event.instanceStartTime,
-                                    event.notificationId,
-                                    if (event.isMuted) 1 else 0
-                            ),
-                            event.notificationId * EVENT_CODES_TOTAL + EVENT_CODE_MUTE_TOGGLE_OFFSET
-                    )
-
-            val actionBuilder =
-                    if (event.isMuted) {
-                        NotificationCompat.Action.Builder(
-                                R.drawable.ic_volume_off_white_24dp,
-                                ctx.getString(R.string.un_mute_notification),
-                                muteTogglePendingIntent
-                        )
-
-                    }
-                    else {
-                        NotificationCompat.Action.Builder(
-                                R.drawable.ic_volume_up_white_24dp,
-                                ctx.getString(R.string.mute_notification),
-                                muteTogglePendingIntent
-                        )
-                    }
-
-            val action = actionBuilder.build()
-            builder.addAction(action)
-            extender.addAction(action)
-            if (idx < 3) {
-                builder.addAction(action)
-            }
-        }
-
-        if (!notificationSettings.behavior.allowNotificationSwipe) {
-            // swipe not allowed - show snooze and dismiss
-            builder.addAction(dismissAction)
-        }
-        else if (notificationSettings.behavior.notificationSwipeDoesSnooze) {
-            // swipe does snooze
-            builder.setDeleteIntent(defaultSnooze0PendingIntent)
-            builder.addAction(dismissAction)
-        }
-        else {
-            // swipe does dismiss
-            builder.setDeleteIntent(dismissPendingIntent)
-        }
-
-        if (notificationSettings.appendEmptyAction) {
-            builder.addAction(
-                    NotificationCompat.Action.Builder(
-                            R.drawable.ic_empty,
-                            "",
-                            primaryPendingIntent
-                    ).build())
-        }
 
         for ((idx, snoozePreset) in snoozePresets.withIndex()) {
             if (idx == 0)
@@ -1230,6 +1162,64 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                     ).build()
 
             extender.addAction(action)
+            if (idx < 3) {
+                builder.addAction(action)
+            }
+        }
+
+        // Keep the full preset picker available after the three quick actions.
+        builder.addAction(snoozeAction)
+
+        if ((notificationSettings.behavior.enableNotificationMute && !event.isTask) || event.isMuted) {
+            val muteTogglePendingIntent =
+                    pendingServiceIntent(ctx,
+                            defaultMuteToggleIntent(
+                                    ctx,
+                                    event.eventId,
+                                    event.instanceStartTime,
+                                    event.notificationId,
+                                    if (event.isMuted) 1 else 0
+                            ),
+                            event.notificationId * EVENT_CODES_TOTAL + EVENT_CODE_MUTE_TOGGLE_OFFSET
+                    )
+
+            val action =
+                    if (event.isMuted) {
+                        NotificationCompat.Action.Builder(
+                                R.drawable.ic_volume_off_white_24dp,
+                                ctx.getString(R.string.un_mute_notification),
+                                muteTogglePendingIntent
+                        )
+                    }
+                    else {
+                        NotificationCompat.Action.Builder(
+                                R.drawable.ic_volume_up_white_24dp,
+                                ctx.getString(R.string.mute_notification),
+                                muteTogglePendingIntent
+                        )
+                    }.build()
+            builder.addAction(action)
+            extender.addAction(action)
+        }
+
+        if (!notificationSettings.behavior.allowNotificationSwipe) {
+            builder.addAction(dismissAction)
+        }
+        else if (notificationSettings.behavior.notificationSwipeDoesSnooze) {
+            builder.setDeleteIntent(defaultSnooze0PendingIntent)
+            builder.addAction(dismissAction)
+        }
+        else {
+            builder.setDeleteIntent(dismissPendingIntent)
+        }
+
+        if (notificationSettings.appendEmptyAction) {
+            builder.addAction(
+                    NotificationCompat.Action.Builder(
+                            R.drawable.ic_empty,
+                            "",
+                            primaryPendingIntent
+                    ).build())
         }
 
         if (notificationSettings.behavior.notificationSwipeDoesSnooze && notificationSettings.behavior.allowNotificationSwipe) {
