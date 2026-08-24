@@ -26,6 +26,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.os.PowerManager
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import android.text.format.DateUtils
@@ -1080,6 +1081,16 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                         NotificationCompat.CATEGORY_EVENT
                 )
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+
+        // MIUI does not render NotificationCompat actions on bundled child cards.
+        // Put the snooze control in the compact card itself so its touch target is
+        // available beside every event while the card stays in the notification shade.
+        val compactNotification = RemoteViews(ctx.packageName, R.layout.notification_event_compact).apply {
+            setTextViewText(R.id.notification_event_title, title)
+            setTextViewText(R.id.notification_event_time, notificationTextString)
+            setOnClickPendingIntent(R.id.notification_snooze, snoozeActivityIntent)
+        }
+        builder.setCustomContentView(compactNotification)
 
         if (notificationSettings.useBundledNotifications) {
             builder.setGroup(NOTIFICATION_GROUP)
