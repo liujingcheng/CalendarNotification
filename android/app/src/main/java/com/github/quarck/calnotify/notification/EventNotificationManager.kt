@@ -1100,11 +1100,19 @@ open class EventNotificationManager : EventNotificationManagerInterface {
         if (snoozePresets.isEmpty())
             snoozePresets = longArrayOf(Consts.DEFAULT_SNOOZE_TIME_IF_NONE)
 
-        val defaultSnooze0PendingIntent =
-                pendingServiceIntent(ctx,
-                        defaultSnoozeIntent(ctx, event.eventId, event.instanceStartTime, event.notificationId, snoozePresets[0]),
-                        event.notificationId * EVENT_CODES_TOTAL + EVENT_CODE_DEFAULT_SNOOOZE0_OFFSET
-                )
+        // Create each PendingIntent once. Recreating one with FLAG_CANCEL_CURRENT
+        // invalidates the instance already attached to a RemoteViews button.
+        val snoozePresetPendingIntents =
+                snoozePresets
+                        .take(EVENT_CODE_DEFAULT_SNOOOZE_MAX_ITEMS)
+                        .mapIndexed { index, preset ->
+                            pendingServiceIntent(ctx,
+                                    defaultSnoozeIntent(ctx, event.eventId, event.instanceStartTime, event.notificationId, preset),
+                                    event.notificationId * EVENT_CODES_TOTAL + EVENT_CODE_DEFAULT_SNOOOZE0_OFFSET + index
+                            )
+                        }
+
+        val defaultSnooze0PendingIntent = snoozePresetPendingIntents[0]
 
         val snoozeAction =
                 NotificationCompat.Action.Builder(
@@ -1145,16 +1153,13 @@ open class EventNotificationManager : EventNotificationManagerInterface {
             setOnClickPendingIntent(R.id.notification_snooze, snoozeActivityIntent)
 
             compactSnoozeButtonIds.forEachIndexed { index, buttonId ->
-                if (index >= snoozePresets.size || index >= EVENT_CODE_DEFAULT_SNOOOZE_MAX_ITEMS) {
+                if (index >= snoozePresetPendingIntents.size) {
                     setViewVisibility(buttonId, View.GONE)
                     return@forEachIndexed
                 }
 
                 val preset = snoozePresets[index]
-                val presetPendingIntent = pendingServiceIntent(ctx,
-                        defaultSnoozeIntent(ctx, event.eventId, event.instanceStartTime, event.notificationId, preset),
-                        event.notificationId * EVENT_CODES_TOTAL + EVENT_CODE_DEFAULT_SNOOOZE0_OFFSET + index
-                )
+                val presetPendingIntent = snoozePresetPendingIntents[index]
                 setTextViewText(buttonId, PreferenceUtils.formatSnoozePreset(preset).lowercase(Locale.ROOT))
                 setOnClickPendingIntent(buttonId, presetPendingIntent)
             }
@@ -1182,11 +1187,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                     continue
             }
 
-            val snoozeIntent =
-                    pendingServiceIntent(ctx,
-                            defaultSnoozeIntent(ctx, event.eventId, event.instanceStartTime, event.notificationId, snoozePreset),
-                            event.notificationId * EVENT_CODES_TOTAL + EVENT_CODE_DEFAULT_SNOOOZE0_OFFSET + idx
-                    )
+            val snoozeIntent = snoozePresetPendingIntents[idx]
 
             val action =
                     NotificationCompat.Action.Builder(
