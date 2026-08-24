@@ -26,6 +26,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.os.PowerManager
+import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -1082,16 +1083,6 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                 )
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
 
-        // MIUI does not render NotificationCompat actions on bundled child cards.
-        // Put the snooze control in the compact card itself so its touch target is
-        // available beside every event while the card stays in the notification shade.
-        val compactNotification = RemoteViews(ctx.packageName, R.layout.notification_event_compact).apply {
-            setTextViewText(R.id.notification_event_title, title)
-            setTextViewText(R.id.notification_event_time, notificationTextString)
-            setOnClickPendingIntent(R.id.notification_snooze, snoozeActivityIntent)
-        }
-        builder.setCustomContentView(compactNotification)
-
         if (notificationSettings.useBundledNotifications) {
             builder.setGroup(NOTIFICATION_GROUP)
             builder.setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
@@ -1136,6 +1127,39 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                                 PreferenceUtils.formatSnoozePreset(snoozePresets[0]),
                         defaultSnooze0PendingIntent
                 ).build()
+
+        // MIUI hides standard notification actions. Put every configured preset
+        // in the compact card so each one can be tapped directly in the shade.
+        val compactSnoozeButtonIds = intArrayOf(
+                R.id.notification_snooze_0,
+                R.id.notification_snooze_1,
+                R.id.notification_snooze_2,
+                R.id.notification_snooze_3,
+                R.id.notification_snooze_4,
+                R.id.notification_snooze_5
+        )
+        val compactNotification = RemoteViews(ctx.packageName, R.layout.notification_event_compact).apply {
+            setTextViewText(R.id.notification_event_title, title)
+            setTextViewText(R.id.notification_event_time, notificationTextString)
+            setTextViewText(R.id.notification_snooze, ctx.getString(R.string.snooze).lowercase(Locale.ROOT))
+            setOnClickPendingIntent(R.id.notification_snooze, snoozeActivityIntent)
+
+            compactSnoozeButtonIds.forEachIndexed { index, buttonId ->
+                if (index >= snoozePresets.size || index >= EVENT_CODE_DEFAULT_SNOOOZE_MAX_ITEMS) {
+                    setViewVisibility(buttonId, View.GONE)
+                    return@forEachIndexed
+                }
+
+                val preset = snoozePresets[index]
+                val presetPendingIntent = pendingServiceIntent(ctx,
+                        defaultSnoozeIntent(ctx, event.eventId, event.instanceStartTime, event.notificationId, preset),
+                        event.notificationId * EVENT_CODES_TOTAL + EVENT_CODE_DEFAULT_SNOOOZE0_OFFSET + index
+                )
+                setTextViewText(buttonId, PreferenceUtils.formatSnoozePreset(preset).lowercase(Locale.ROOT))
+                setOnClickPendingIntent(buttonId, presetPendingIntent)
+            }
+        }
+        builder.setCustomContentView(compactNotification)
 
         // Show the first three configured presets directly on the phone notification.
         // The remaining presets are still exposed through the snooze picker and Wear OS.

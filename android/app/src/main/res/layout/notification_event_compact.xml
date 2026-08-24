@@ -3,15 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:minHeight="48dp"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingStart="8dp"
-    android:paddingEnd="8dp">
+    android:paddingTop="7dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="7dp">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="vertical">
 
         <TextView
@@ -33,12 +33,21 @@
             android:textSize="14sp" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/notification_snooze"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:minWidth="64dp"
-        android:text="@string/snooze"
-        android:textColor="#1976D2"
-        android:textSize="14sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <Button android:id="@+id/notification_snooze_0" style="@style/NotificationSnoozeButton" />
+        <Button android:id="@+id/notification_snooze_1" style="@style/NotificationSnoozeButton" />
+        <Button android:id="@+id/notification_snooze_2" style="@style/NotificationSnoozeButton" />
+        <Button android:id="@+id/notification_snooze_3" style="@style/NotificationSnoozeButton" />
+        <Button android:id="@+id/notification_snooze_4" style="@style/NotificationSnoozeButton" />
+        <Button android:id="@+id/notification_snooze_5" style="@style/NotificationSnoozeButton" />
+        <Button
+            android:id="@+id/notification_snooze"
+            style="@style/NotificationSnoozeButton"
+            android:text="@string/snooze" />
+    </LinearLayout>
 </LinearLayout>
