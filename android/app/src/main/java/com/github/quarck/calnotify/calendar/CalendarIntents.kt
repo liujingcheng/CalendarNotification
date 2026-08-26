@@ -45,19 +45,16 @@ object CalendarIntents {
         val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.eventId);
         val intent = Intent(action).setData(uri)
 
-        // Only add event time for repeating events (non-repeating handled by calendar app on API 21+)
-        val shouldAddEventTime = event.isRepeating
+        // Xiaomi Calendar does not reliably resolve the date/time from an event URI
+        // alone. Always include the displayed occurrence times, falling back to the
+        // event's DTSTART/DTEND when no instance-specific values are available.
+        val startTime = event.displayedStartTime
+        val endTime = event.displayedEndTime
 
-        val canAddEventTime =
-                event.instanceStartTime != 0L &&
-                        event.instanceEndTime != 0L &&
-                        event.instanceStartTime < event.instanceEndTime
-
-        if (shouldAddEventTime && canAddEventTime) {
-            // only add if it is a valid instance start / end time, and we need both
-            DevLog.debug(LOG_TAG, "Adding instance start / end for event ${event.eventId}, start: ${event.instanceStartTime}, end: ${event.instanceEndTime}");
-            intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.instanceStartTime)
-            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, event.instanceEndTime)
+        if (startTime > 0L && endTime > startTime) {
+            DevLog.debug(LOG_TAG, "Adding event start / end for event ${event.eventId}, start: $startTime, end: $endTime")
+            intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTime)
+            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime)
         }
 
         return intent
