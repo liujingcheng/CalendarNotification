@@ -124,7 +124,11 @@ open class ViewEventActivityNoRecents : AppCompatActivity() {
             R.id.snooze_view_snooze_present3,
             R.id.snooze_view_snooze_present4,
             R.id.snooze_view_snooze_present5,
-            R.id.snooze_view_snooze_present6
+            R.id.snooze_view_snooze_present6,
+            R.id.snooze_view_snooze_present7,
+            R.id.snooze_view_snooze_present8,
+            R.id.snooze_view_snooze_present9,
+            R.id.snooze_view_snooze_present10
     )
 
     val snoozePresentQuietTimeReminderControlIds = intArrayOf(
@@ -238,23 +242,23 @@ open class ViewEventActivityNoRecents : AppCompatActivity() {
         // Populate snooze controls
         for ((idx, id) in snoozePresetControlIds.withIndex()) {
             val snoozeLable = findOrThrow<TextView>(id);
-            val quietTimeNotice = findOrThrow<TextView>(snoozePresentQuietTimeReminderControlIds[idx])
-            val quietTimeNoticeBaseline = findOrThrow<TextView>(baselineIds[idx])
+            val quietTimeNotice = snoozePresentQuietTimeReminderControlIds.getOrNull(idx)?.let { findOrThrow<TextView>(it) }
+            val quietTimeNoticeBaseline = baselineIds.getOrNull(idx)?.let { findOrThrow<TextView>(it) }
 
             if (idx < snoozePresets.size) {
                 snoozeLable.text = formatPreset(snoozePresets[idx])
                 snoozeLable.visibility = View.VISIBLE;
-                quietTimeNoticeBaseline.visibility = View.VISIBLE
+                quietTimeNoticeBaseline?.visibility = View.VISIBLE
 
                 if (isQuiet[idx])
-                    quietTimeNotice.visibility = View.VISIBLE
+                    quietTimeNotice?.visibility = View.VISIBLE
                 else
-                    quietTimeNotice.visibility = View.GONE
+                    quietTimeNotice?.visibility = View.GONE
             }
             else {
                 snoozeLable.visibility = View.GONE;
-                quietTimeNotice.visibility = View.GONE
-                quietTimeNoticeBaseline.visibility = View.GONE
+                quietTimeNotice?.visibility = View.GONE
+                quietTimeNoticeBaseline?.visibility = View.GONE
             }
         }
 

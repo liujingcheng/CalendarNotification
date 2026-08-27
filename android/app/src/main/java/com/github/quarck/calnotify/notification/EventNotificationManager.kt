@@ -1144,7 +1144,11 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                 R.id.notification_snooze_2,
                 R.id.notification_snooze_3,
                 R.id.notification_snooze_4,
-                R.id.notification_snooze_5
+                R.id.notification_snooze_5,
+                R.id.notification_snooze_6,
+                R.id.notification_snooze_7,
+                R.id.notification_snooze_8,
+                R.id.notification_snooze_9
         )
         val compactNotification = RemoteViews(ctx.packageName, R.layout.notification_event_compact).apply {
             setTextViewText(R.id.notification_event_title, title)
@@ -1595,8 +1599,10 @@ open class EventNotificationManager : EventNotificationManagerInterface {
         const val EVENT_CODE_DELETE_OFFSET = 2
         const val EVENT_CODE_OPEN_OFFSET = 3
         const val EVENT_CODE_DEFAULT_SNOOOZE0_OFFSET = 4
-        const val EVENT_CODE_MUTE_TOGGLE_OFFSET = 5
-        const val EVENT_CODE_DEFAULT_SNOOOZE_MAX_ITEMS = 10
+        // Preset snooze actions occupy offsets 4 through 13. Keep mute outside
+        // that range so its PendingIntent can never replace a preset action.
+        const val EVENT_CODE_MUTE_TOGGLE_OFFSET = 14
+        const val EVENT_CODE_DEFAULT_SNOOOZE_MAX_ITEMS = Consts.MAX_SUPPORTED_PRESETS
         const val EVENT_CODES_TOTAL = 16
 
         const val MAIN_ACTIVITY_EVERYTHING_COLLAPSED_CODE = 0

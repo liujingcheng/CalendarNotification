@@ -150,7 +150,7 @@ object Consts {
 
     val DEFAULT_SNOOZE_PRESETS = longArrayOf(15 * 60 * 1000, 60 * 60 * 1000, 4 * 60 * 60 * 1000, 24 * 60 * 60 * 1000)
 
-    const val MAX_SUPPORTED_PRESETS = 6
+    const val MAX_SUPPORTED_PRESETS = 10
 
     const val DEFAULT_CALENDAR_EVENT_COLOR = 0xff0000ff.toInt()
 

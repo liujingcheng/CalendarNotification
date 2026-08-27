@@ -33,7 +33,7 @@
     <string name="error_cannot_parse_preset">Извините, невозможно разобрать введенные данные</string>
     <string name="snooze_presets_title">Варианты отсрочки</string>
     <string name="snooze_presets_summary">Изменить стандартные варианты времени отсрочки</string>
-    <string name="error_too_many_presets">Поддерживается только 6 вариантов, остальные будут проигнорированы</string>
+    <string name="error_too_many_presets">Поддерживается только 10 вариантов, остальные будут проигнорированы</string>
     <string name="now">сейчас</string>
     <string name="days">дн.</string>
     <string name="day">дн.</string>

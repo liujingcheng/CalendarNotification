@@ -156,7 +156,7 @@ class Settings(context: Context) : PersistentStorageBase(context), SettingsInter
             if (ret == null || ret.isEmpty())
                 ret = Consts.DEFAULT_SNOOZE_PRESETS
 
-            return ret;
+            return ret.take(Consts.MAX_SUPPORTED_PRESETS).toLongArray()
         }
 
 //    val firstNonNegativeSnoozeTime: Long

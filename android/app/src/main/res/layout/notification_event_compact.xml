@@ -11,43 +11,55 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="32dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/notification_event_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
             android:ellipsize="end"
+            android:gravity="center_vertical"
             android:maxLines="1"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/notification_event_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="#66000000"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_marginTop="6dp"
-        android:orientation="horizontal">
 
         <Button android:id="@+id/notification_snooze_0" style="@style/NotificationSnoozeButton" />
         <Button android:id="@+id/notification_snooze_1" style="@style/NotificationSnoozeButton" />
         <Button android:id="@+id/notification_snooze_2" style="@style/NotificationSnoozeButton" />
         <Button android:id="@+id/notification_snooze_3" style="@style/NotificationSnoozeButton" />
         <Button android:id="@+id/notification_snooze_4" style="@style/NotificationSnoozeButton" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/notification_event_time"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="#66000000"
+            android:textSize="14sp" />
+
         <Button android:id="@+id/notification_snooze_5" style="@style/NotificationSnoozeButton" />
+        <Button android:id="@+id/notification_snooze_6" style="@style/NotificationSnoozeButton" />
+        <Button android:id="@+id/notification_snooze_7" style="@style/NotificationSnoozeButton" />
+        <Button android:id="@+id/notification_snooze_8" style="@style/NotificationSnoozeButton" />
+        <Button android:id="@+id/notification_snooze_9" style="@style/NotificationSnoozeButton" />
         <Button
             android:id="@+id/notification_snooze"
             style="@style/NotificationSnoozeButton"
+            android:layout_weight="1.4"
             android:text="@string/snooze" />
     </LinearLayout>
 </LinearLayout>

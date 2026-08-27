@@ -45,7 +45,7 @@
     <string name="snooze_presets_title">Voreinstellungen</string>
     <string name="snooze_presets_summary">Hier können Sie die \'Schlummern\'-Voreinstellungen bearbeiten.</string>
 
-    <string name="error_too_many_presets">Es werden höchstens 6 Voreinstellungen unterstützt, zusätzliche Einträge werden ignoriert!</string>
+    <string name="error_too_many_presets">Es werden höchstens 10 Voreinstellungen unterstützt, zusätzliche Einträge werden ignoriert!</string>
 
     <string name="now">Jetzt</string>
     <string name="days">Tage</string>
