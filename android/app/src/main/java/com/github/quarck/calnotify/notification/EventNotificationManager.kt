@@ -1165,6 +1165,10 @@ open class EventNotificationManager : EventNotificationManagerInterface {
             }
         }
         builder.setCustomContentView(compactNotification)
+        // A heads-up notification uses a separate layout. Without this, MIUI falls
+        // back to the standard Action row and truncates every "Snooze <preset>"
+        // label to the indistinguishable "Snoo...".
+        builder.setCustomHeadsUpContentView(compactNotification)
 
         // Show the first three configured presets directly on the phone notification.
         // The remaining presets are still exposed through the snooze picker and Wear OS.
