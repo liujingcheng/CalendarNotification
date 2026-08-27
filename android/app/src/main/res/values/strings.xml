@@ -53,7 +53,7 @@
     <string name="snooze_presets_title">Snooze Presets</string>
     <string name="snooze_presets_summary">Here you can change default snooze presets</string>
 
-    <string name="error_too_many_presets">Only up to 10 presets are supported, extra presets would be ignored</string>
+    <string name="error_too_many_presets">Only up to 11 presets are supported, extra presets would be ignored</string>
 
     <string name="now">now</string>
     <string name="days">days</string>

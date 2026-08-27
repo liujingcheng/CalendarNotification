@@ -128,7 +128,8 @@ open class ViewEventActivityNoRecents : AppCompatActivity() {
             R.id.snooze_view_snooze_present7,
             R.id.snooze_view_snooze_present8,
             R.id.snooze_view_snooze_present9,
-            R.id.snooze_view_snooze_present10
+            R.id.snooze_view_snooze_present10,
+            R.id.snooze_view_snooze_present11
     )
 
     val snoozePresentQuietTimeReminderControlIds = intArrayOf(

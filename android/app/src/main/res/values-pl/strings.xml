@@ -46,7 +46,7 @@
     <string name="snooze_presets_title">Definicje odłożeń</string>
     <string name="snooze_presets_summary">Tutaj zmienisz domyślne czasy odłożeń.</string>
 
-    <string name="error_too_many_presets">Dopuszczalne jest użycie maksymalnie 10 definicji, wszystkie kolejne są ignorowane.</string>
+    <string name="error_too_many_presets">Dopuszczalne jest użycie maksymalnie 11 definicji, wszystkie kolejne są ignorowane.</string>
     <string name="now">teraz</string>
     <string name="days">dni</string>
     <string name="day">dzień</string>

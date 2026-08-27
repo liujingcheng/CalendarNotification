@@ -1030,6 +1030,9 @@ open class EventNotificationManager : EventNotificationManagerInterface {
 
         val title = event.title
         val notificationTextString = notificationText.toString()
+        val compactTimeString =
+                if (event.isAllDay) notificationTextString
+                else formatter.formatTimePoint(event.displayedStartTime)
 
         val sortKey = lastStatusChangeToSortingKey(event.lastStatusChangeTime, event.eventId)
 
@@ -1148,11 +1151,12 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                 R.id.notification_snooze_6,
                 R.id.notification_snooze_7,
                 R.id.notification_snooze_8,
-                R.id.notification_snooze_9
+                R.id.notification_snooze_9,
+                R.id.notification_snooze_10
         )
         val compactNotification = RemoteViews(ctx.packageName, R.layout.notification_event_compact).apply {
             setTextViewText(R.id.notification_event_title, title)
-            setTextViewText(R.id.notification_event_time, notificationTextString)
+            setTextViewText(R.id.notification_event_time, compactTimeString)
             setTextViewText(R.id.notification_snooze, ctx.getString(R.string.snooze).lowercase(Locale.ROOT))
             setOnClickPendingIntent(R.id.notification_snooze, snoozeActivityIntent)
 
@@ -1599,9 +1603,9 @@ open class EventNotificationManager : EventNotificationManagerInterface {
         const val EVENT_CODE_DELETE_OFFSET = 2
         const val EVENT_CODE_OPEN_OFFSET = 3
         const val EVENT_CODE_DEFAULT_SNOOOZE0_OFFSET = 4
-        // Preset snooze actions occupy offsets 4 through 13. Keep mute outside
+        // Preset snooze actions occupy offsets 4 through 14. Keep mute outside
         // that range so its PendingIntent can never replace a preset action.
-        const val EVENT_CODE_MUTE_TOGGLE_OFFSET = 14
+        const val EVENT_CODE_MUTE_TOGGLE_OFFSET = 15
         const val EVENT_CODE_DEFAULT_SNOOOZE_MAX_ITEMS = Consts.MAX_SUPPORTED_PRESETS
         const val EVENT_CODES_TOTAL = 16
 

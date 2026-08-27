@@ -32,7 +32,7 @@
     <string name="error_cannot_parse_preset">Вибачте, неможливо розібрати введені дані</string>
     <string name="snooze_presets_title">Варіанти відкладення</string>
     <string name="snooze_presets_summary">Змінити стандартні варіанти відкладення</string>
-    <string name="error_too_many_presets">Підтримується тільки 10 варіантів, інші будуть проігноровані</string>
+    <string name="error_too_many_presets">Підтримується тільки 11 варіантів, інші будуть проігноровані</string>
     <string name="now">зараз</string>
     <string name="days">дн.</string>
     <string name="day">дн.</string>

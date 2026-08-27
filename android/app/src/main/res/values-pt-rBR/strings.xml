@@ -46,7 +46,7 @@
     <string name="snooze_presets_title">Opções de Adiamento</string>
     <string name="snooze_presets_summary">Aqui você pode alterar as opções padrão de adiamento</string>
 
-    <string name="error_too_many_presets">São suportados no máximo 10 opções, aquelas adicionais serão ignoradas</string>
+    <string name="error_too_many_presets">São suportados no máximo 11 opções, aquelas adicionais serão ignoradas</string>
 
     <string name="days">dias</string>
     <string name="day">dia</string>

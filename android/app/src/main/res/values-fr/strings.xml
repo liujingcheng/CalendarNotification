@@ -50,7 +50,7 @@
     <string name="snooze_presets_title">"Réglages des répétitions"</string>
     <string name="snooze_presets_summary">"Ici, vous pouvez modifier les réglages de répétition par défaut"</string>
 
-    <string name="error_too_many_presets">"Seulement 10 préréglages sont pris en charge, les préréglages supplémentaires seront ignorés"</string>
+    <string name="error_too_many_presets">"Seulement 11 préréglages sont pris en charge, les préréglages supplémentaires seront ignorés"</string>
 
     <string name="now">"maintenant"</string>
     <string name="days">"jours"</string>
