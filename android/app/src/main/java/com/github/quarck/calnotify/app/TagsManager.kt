@@ -22,6 +22,7 @@ package com.github.quarck.calnotify.app
 import android.content.Context
 import com.github.quarck.calnotify.Settings
 import com.github.quarck.calnotify.calendar.EventAlertRecord
+import com.github.quarck.calnotify.calendar.XiaomiCalendarAlarmDetector
 
 
 class TagsManager : TagsManagerInterface {
@@ -51,7 +52,11 @@ class TagsManager : TagsManagerInterface {
         // Preserve existing mute status (e.g., from pre-mute) while also checking for #mute tag
         event.isMuted = event.isMuted || event.hasTag(MUTE_TAG)
         event.isTask = event.hasTag(TASK_TAG)
-        event.isAlarm = event.hasTag(ALARM_TAG)
+        // Xiaomi Calendar keeps its alarm toggle in CalendarContract.ExtendedProperties
+        // rather than in the standard reminder row. Preserve the portable #alarm tag
+        // while also honoring the actual toggle selected in Xiaomi Calendar.
+        event.isAlarm = event.isAlarm || event.hasTag(ALARM_TAG) ||
+            XiaomiCalendarAlarmDetector.isAlarm(context, event.eventId)
     }
 
     companion object {

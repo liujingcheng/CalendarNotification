@@ -81,14 +81,17 @@ open class EventNotificationManager : EventNotificationManagerInterface {
     }
 
     override fun onEventDismissing(context: Context, eventId: Long, notificationId: Int) {
+        XiaomiAlarmSoundFallback.stop()
         removeNotification(context, notificationId)
     }
 
     override fun onEventsDismissing(context: Context, events: Collection<EventAlertRecord>) {
+        XiaomiAlarmSoundFallback.stop()
         removeNotifications(context, events)
     }
 
     override fun onEventDismissed(context: Context, formatter: EventFormatterInterface, eventId: Long, notificationId: Int) {
+        XiaomiAlarmSoundFallback.stop()
         removeNotification(context, notificationId)
         postEventNotifications(context, formatter, false, null)
     }
@@ -109,6 +112,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
     }
 
     override fun onEventSnoozed(context: Context, formatter: EventFormatterInterface, eventId: Long, notificationId: Int) {
+        XiaomiAlarmSoundFallback.stop()
         removeNotification(context, notificationId)
         postEventNotifications(context, formatter, false, null)
     }
@@ -522,8 +526,10 @@ open class EventNotificationManager : EventNotificationManagerInterface {
 
                 lastSoundTimestamp = currentTime
 
-                if (notificationsSettings.useAlarmStreamForEverything || hasAlarms)
+                if (notificationsSettings.useAlarmStreamForEverything || hasAlarms) {
                     builder.setSound(notificationsSettings.ringtoneUri, AudioManager.STREAM_ALARM)
+                    XiaomiAlarmSoundFallback.play(context)
+                }
                 else
                     builder.setSound(notificationsSettings.ringtoneUri)
             }
@@ -1082,7 +1088,10 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                         sortKey
                 )
                 .setCategory(
-                        NotificationCompat.CATEGORY_EVENT
+                        if (event.isAlarm || forceAlarmStream)
+                            NotificationCompat.CATEGORY_ALARM
+                        else
+                            NotificationCompat.CATEGORY_EVENT
                 )
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
 
@@ -1291,8 +1300,10 @@ open class EventNotificationManager : EventNotificationManagerInterface {
 
             lastSoundTimestamp = currentTime
 
-            if (notificationSettings.useAlarmStreamForEverything || event.isAlarm || forceAlarmStream)
+            if (notificationSettings.useAlarmStreamForEverything || event.isAlarm || forceAlarmStream) {
                 builder.setSound(notificationSettings.ringtoneUri, AudioManager.STREAM_ALARM)
+                XiaomiAlarmSoundFallback.play(ctx)
+            }
             else
                 builder.setSound(notificationSettings.ringtoneUri)
         }

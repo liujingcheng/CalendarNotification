@@ -22,6 +22,7 @@ package com.github.quarck.calnotify.notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioAttributes
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.*
 import org.junit.Before
@@ -159,6 +160,15 @@ class NotificationChannelsRobolectricTest {
     }
 
     @Test
+    fun `alarm channel uses alarm audio stream`() {
+        NotificationChannels.createChannels(context)
+
+        val channel = notificationManager.getNotificationChannel(NotificationChannels.CHANNEL_ID_ALARM)
+        assertEquals(AudioAttributes.USAGE_ALARM, channel?.audioAttributes?.usage)
+        assertNotNull("Alarm channel should have a sound", channel?.sound)
+    }
+
+    @Test
     fun `alarm reminders channel is assigned to alarm group`() {
         // Act
         NotificationChannels.createChannels(context)
@@ -167,6 +177,15 @@ class NotificationChannelsRobolectricTest {
         val channel = notificationManager.getNotificationChannel(NotificationChannels.CHANNEL_ID_ALARM_REMINDERS)
         assertEquals("Alarm reminders channel should be in Alarm group",
             NotificationChannels.GROUP_ID_ALARM, channel?.group)
+    }
+
+    @Test
+    fun `alarm reminders channel uses alarm audio stream`() {
+        NotificationChannels.createChannels(context)
+
+        val channel = notificationManager.getNotificationChannel(NotificationChannels.CHANNEL_ID_ALARM_REMINDERS)
+        assertEquals(AudioAttributes.USAGE_ALARM, channel?.audioAttributes?.usage)
+        assertNotNull("Alarm reminders channel should have a sound", channel?.sound)
     }
 
     @Test

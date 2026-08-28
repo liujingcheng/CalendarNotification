@@ -23,6 +23,7 @@ import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -43,10 +44,13 @@ object NotificationChannels {
     // (channel_id_default, channel_id_alarm, etc.) which are used by XML preferences.
     // See NotificationChannelsRobolectricTest for sync verification.
     const val CHANNEL_ID_DEFAULT = "calendar_events"
-    const val CHANNEL_ID_ALARM = "calendar_alarm"
+    // v2 is intentional: Android locks sound/audio attributes after a channel is
+    // created, so a new ID is required to migrate existing installations to a
+    // channel that really uses the alarm audio stream.
+    const val CHANNEL_ID_ALARM = "calendar_alarm_v2"
     const val CHANNEL_ID_SILENT = "calendar_silent"
     const val CHANNEL_ID_REMINDERS = "calendar_reminders"
-    const val CHANNEL_ID_ALARM_REMINDERS = "calendar_alarm_reminders"
+    const val CHANNEL_ID_ALARM_REMINDERS = "calendar_alarm_reminders_v2"
     
     /**
      * Creates all notification channels and groups. Safe to call multiple times -
@@ -59,6 +63,13 @@ object NotificationChannels {
         }
         
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val alarmAudioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ALARM)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
         
         // Create channel groups first
         val mainGroup = NotificationChannelGroup(
@@ -114,6 +125,7 @@ object NotificationChannels {
             group = GROUP_ID_ALARM
             enableVibration(true)
             enableLights(true)
+            setSound(alarmSound, alarmAudioAttributes)
         }
         
         // Alarm reminders channel (Alarm group)
@@ -126,6 +138,7 @@ object NotificationChannels {
             group = GROUP_ID_ALARM
             enableVibration(true)
             enableLights(true)
+            setSound(alarmSound, alarmAudioAttributes)
         }
         
         // Silent channel for muted notifications (Silent group)
