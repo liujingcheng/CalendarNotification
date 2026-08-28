@@ -75,6 +75,16 @@ class NotificationActionServicesRobolectricTest {
     }
 
     @Test
+    fun testSnoozeAtHourIntentExtrasForIndividualEvent() {
+        val intent = Intent(context, NotificationActionSnoozeService::class.java)
+        intent.putExtra(Consts.INTENT_SNOOZE_TARGET_HOUR, 10)
+        intent.putExtra(Consts.INTENT_SNOOZE_TARGET_FORCE_TOMORROW, true)
+
+        assertEquals(10, intent.getIntExtra(Consts.INTENT_SNOOZE_TARGET_HOUR, -1))
+        assertTrue(intent.getBooleanExtra(Consts.INTENT_SNOOZE_TARGET_FORCE_TOMORROW, false))
+    }
+
+    @Test
     fun testSnoozeAllIntentExtras() {
         val intent = Intent(context, NotificationActionSnoozeService::class.java)
         intent.putExtra(Consts.INTENT_SNOOZE_ALL_KEY, true)

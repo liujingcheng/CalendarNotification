@@ -54,7 +54,7 @@ class NotificationActionSnoozeService : IntentService("NotificationActionSnoozeS
             if (isSnoozeAll){
                 DevLog.info(LOG_TAG, "Snooze all from notification request")
 
-                val snoozeDelay = intent.getLongExtra(Consts.INTENT_SNOOZE_PRESET, Settings(this).snoozePresets[0])
+                val snoozeDelay = resolveSnoozeDelay(intent)
 
                 if (ApplicationController.snoozeAllEvents(this, snoozeDelay, false, true) != null) {
                     DevLog.info(LOG_TAG, "all visible snoozed by $snoozeDelay")
@@ -66,7 +66,7 @@ class NotificationActionSnoozeService : IntentService("NotificationActionSnoozeS
             else if (isSnoozeAllCollapsed) {
                 DevLog.info(LOG_TAG, "Snooze all collapsed from notification request")
 
-                val snoozeDelay = intent.getLongExtra(Consts.INTENT_SNOOZE_PRESET, Settings(this).snoozePresets[0])
+                val snoozeDelay = resolveSnoozeDelay(intent)
 
                 if (ApplicationController.snoozeAllCollapsedEvents(this, snoozeDelay, false, true) != null) {
                     DevLog.info(LOG_TAG, "all collapsed snoozed by $snoozeDelay")
@@ -79,7 +79,7 @@ class NotificationActionSnoozeService : IntentService("NotificationActionSnoozeS
                 val notificationId = intent.getIntExtra(Consts.INTENT_NOTIFICATION_ID_KEY, -1)
                 val eventId = intent.getLongExtra(Consts.INTENT_EVENT_ID_KEY, -1)
                 val instanceStartTime = intent.getLongExtra(Consts.INTENT_INSTANCE_START_TIME_KEY, -1)
-                val snoozeDelay = intent.getLongExtra(Consts.INTENT_SNOOZE_PRESET, Settings(this).snoozePresets[0])
+                val snoozeDelay = resolveSnoozeDelay(intent)
 
                 if (notificationId != -1 && eventId != -1L && instanceStartTime != -1L) {
                     if (ApplicationController.snoozeEvent(this, eventId, instanceStartTime, snoozeDelay) != null) {
@@ -99,6 +99,22 @@ class NotificationActionSnoozeService : IntentService("NotificationActionSnoozeS
         }
 
         ApplicationController.cleanupEventReminder(this)
+    }
+
+    private fun resolveSnoozeDelay(intent: Intent): Long {
+        val targetHour = intent.getIntExtra(Consts.INTENT_SNOOZE_TARGET_HOUR, -1)
+        if (targetHour in 0..23) {
+            return SnoozeTargetTimeCalculator.delayUntilHour(
+                now = System.currentTimeMillis(),
+                hourOfDay = targetHour,
+                forceTomorrow = intent.getBooleanExtra(
+                    Consts.INTENT_SNOOZE_TARGET_FORCE_TOMORROW,
+                    false
+                )
+            )
+        }
+
+        return intent.getLongExtra(Consts.INTENT_SNOOZE_PRESET, Settings(this).snoozePresets[0])
     }
 
     private fun onSnoozedBy(duration: Long) {

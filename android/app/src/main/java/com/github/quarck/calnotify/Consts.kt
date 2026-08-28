@@ -69,6 +69,8 @@ object Consts {
     const val INTENT_SNOOZE_ALL_IS_CHANGE = "snooze_all_is_change"
     const val INTENT_SNOOZE_FROM_MAIN_ACTIVITY = "snooze_by_main_activity"
     const val INTENT_SNOOZE_PRESET = "snooze_preset"
+    const val INTENT_SNOOZE_TARGET_HOUR = "snooze_target_hour"
+    const val INTENT_SNOOZE_TARGET_FORCE_TOMORROW = "snooze_target_force_tomorrow"
     const val INTENT_SNOOZE_ALL_KEY = "snooze_all"
     const val INTENT_SEARCH_QUERY = "search_query"
     const val INTENT_SEARCH_QUERY_EVENT_COUNT = "search_query_event_count"

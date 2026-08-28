@@ -1126,6 +1126,48 @@ open class EventNotificationManager : EventNotificationManagerInterface {
 
         val defaultSnooze0PendingIntent = snoozePresetPendingIntents[0]
 
+        data class CompactSnoozeSpec(
+            val label: String,
+            val duration: Long? = null,
+            val hourOfDay: Int? = null,
+            val forceTomorrow: Boolean = false
+        )
+
+        val compactSecondRowSpecs = listOf(
+            CompactSnoozeSpec("1h", duration = 1L * 60L * 60L * 1000L),
+            CompactSnoozeSpec("2h", duration = 2L * 60L * 60L * 1000L),
+            CompactSnoozeSpec("3h", duration = 3L * 60L * 60L * 1000L),
+            CompactSnoozeSpec("A3", hourOfDay = 15),
+            CompactSnoozeSpec("E8", hourOfDay = 20),
+            CompactSnoozeSpec("T10", hourOfDay = 10, forceTomorrow = true),
+            CompactSnoozeSpec("1d", duration = 24L * 60L * 60L * 1000L)
+        )
+        val compactSecondRowPendingIntents = compactSecondRowSpecs.mapIndexed { index, spec ->
+            val intent = if (spec.duration != null) {
+                defaultSnoozeIntent(
+                    ctx,
+                    event.eventId,
+                    event.instanceStartTime,
+                    event.notificationId,
+                    spec.duration
+                )
+            } else {
+                defaultSnoozeAtHourIntent(
+                    ctx,
+                    event.eventId,
+                    event.instanceStartTime,
+                    event.notificationId,
+                    spec.hourOfDay!!,
+                    spec.forceTomorrow
+                )
+            }
+            pendingServiceIntent(
+                ctx,
+                intent,
+                event.notificationId * EVENT_CODES_TOTAL + EVENT_CODE_COMPACT_SNOOOZE0_OFFSET + index
+            )
+        }
+
         val snoozeAction =
                 NotificationCompat.Action.Builder(
                         R.drawable.ic_update_white_24dp,
@@ -1148,13 +1190,15 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                         defaultSnooze0PendingIntent
                 ).build()
 
-        // MIUI hides standard notification actions. Put every configured preset
-        // in the compact card so each one can be tapped directly in the shade.
-        val compactSnoozeButtonIds = intArrayOf(
+        // MIUI hides standard notification actions. Keep four configured presets
+        // beside the title and put the fixed longer/clock-time shortcuts below.
+        val compactFirstRowButtonIds = intArrayOf(
                 R.id.notification_snooze_0,
                 R.id.notification_snooze_1,
                 R.id.notification_snooze_2,
-                R.id.notification_snooze_3,
+                R.id.notification_snooze_3
+        )
+        val compactSecondRowButtonIds = intArrayOf(
                 R.id.notification_snooze_4,
                 R.id.notification_snooze_5,
                 R.id.notification_snooze_6,
@@ -1169,7 +1213,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
             setTextViewText(R.id.notification_snooze, ctx.getString(R.string.snooze).lowercase(Locale.ROOT))
             setOnClickPendingIntent(R.id.notification_snooze, snoozeActivityIntent)
 
-            compactSnoozeButtonIds.forEachIndexed { index, buttonId ->
+            compactFirstRowButtonIds.forEachIndexed { index, buttonId ->
                 if (index >= snoozePresetPendingIntents.size) {
                     setViewVisibility(buttonId, View.GONE)
                     return@forEachIndexed
@@ -1179,6 +1223,11 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                 val presetPendingIntent = snoozePresetPendingIntents[index]
                 setTextViewText(buttonId, PreferenceUtils.formatSnoozePreset(preset).lowercase(Locale.ROOT))
                 setOnClickPendingIntent(buttonId, presetPendingIntent)
+            }
+
+            compactSecondRowButtonIds.forEachIndexed { index, buttonId ->
+                setTextViewText(buttonId, compactSecondRowSpecs[index].label)
+                setOnClickPendingIntent(buttonId, compactSecondRowPendingIntents[index])
             }
         }
         builder.setCustomContentView(compactNotification)
@@ -1382,6 +1431,23 @@ open class EventNotificationManager : EventNotificationManagerInterface {
         intent.putExtra(Consts.INTENT_EVENT_ID_KEY, eventId)
         intent.putExtra(Consts.INTENT_INSTANCE_START_TIME_KEY, instanceStartTime)
         intent.putExtra(Consts.INTENT_SNOOZE_PRESET, snoozePreset)
+        return intent
+    }
+
+    private fun defaultSnoozeAtHourIntent(
+        ctx: Context,
+        eventId: Long,
+        instanceStartTime: Long,
+        notificationId: Int,
+        hourOfDay: Int,
+        forceTomorrow: Boolean
+    ): Intent {
+        val intent = Intent(ctx, NotificationActionSnoozeService::class.java)
+        intent.putExtra(Consts.INTENT_NOTIFICATION_ID_KEY, notificationId)
+        intent.putExtra(Consts.INTENT_EVENT_ID_KEY, eventId)
+        intent.putExtra(Consts.INTENT_INSTANCE_START_TIME_KEY, instanceStartTime)
+        intent.putExtra(Consts.INTENT_SNOOZE_TARGET_HOUR, hourOfDay)
+        intent.putExtra(Consts.INTENT_SNOOZE_TARGET_FORCE_TOMORROW, forceTomorrow)
         return intent
     }
 
@@ -1614,11 +1680,12 @@ open class EventNotificationManager : EventNotificationManagerInterface {
         const val EVENT_CODE_DELETE_OFFSET = 2
         const val EVENT_CODE_OPEN_OFFSET = 3
         const val EVENT_CODE_DEFAULT_SNOOOZE0_OFFSET = 4
-        // Preset snooze actions occupy offsets 4 through 14. Keep mute outside
-        // that range so its PendingIntent can never replace a preset action.
-        const val EVENT_CODE_MUTE_TOGGLE_OFFSET = 15
+        // Configured presets occupy offsets 4 through 14. The seven compact
+        // second-row actions use 15 through 21; keep mute outside both ranges.
+        const val EVENT_CODE_COMPACT_SNOOOZE0_OFFSET = 15
+        const val EVENT_CODE_MUTE_TOGGLE_OFFSET = 22
         const val EVENT_CODE_DEFAULT_SNOOOZE_MAX_ITEMS = Consts.MAX_SUPPORTED_PRESETS
-        const val EVENT_CODES_TOTAL = 16
+        const val EVENT_CODES_TOTAL = 23
 
         const val MAIN_ACTIVITY_EVERYTHING_COLLAPSED_CODE = 0
         const val MAIN_ACTIVITY_NUM_NOTIFICATIONS_COLLAPSED_CODE = 1
