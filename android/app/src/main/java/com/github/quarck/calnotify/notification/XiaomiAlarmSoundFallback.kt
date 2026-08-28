@@ -51,7 +51,7 @@ object XiaomiAlarmSoundFallback {
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .build()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    ringtone.isLooping = false
+                    ringtone.isLooping = true
                 }
 
                 currentRingtone = ringtone
@@ -83,6 +83,6 @@ object XiaomiAlarmSoundFallback {
         }
     }
 
-    private const val MAX_PLAY_DURATION_MS = 30_000L
+    internal const val MAX_PLAY_DURATION_MS = 2 * 60_000L
     private const val LOG_TAG = "XiaomiAlarmSound"
 }
