@@ -921,7 +921,12 @@ open class ViewEventActivityNoRecents : AppCompatActivity() {
                 // Show
                 if (Settings(this).viewAfterEdit) {
                     handler.postDelayed({
-                        CalendarIntents.viewCalendarEvent(this, newEventId)
+                        CalendarIntents.viewCalendarEvent(
+                                this,
+                                newEventId,
+                                event.displayedStartTime + addTime,
+                                event.displayedEndTime + addTime
+                        )
                         finish()
                     }, 100)
                 }

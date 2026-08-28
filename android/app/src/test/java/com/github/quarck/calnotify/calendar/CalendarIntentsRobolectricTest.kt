@@ -128,6 +128,30 @@ class CalendarIntentsRobolectricTest {
             "URI should contain event ID",
             intent.data.toString().contains("/events/12345")
         )
+        assertEquals(event.displayedStartTime, intent.getLongExtra("beginTime", 0L))
+        assertEquals(event.displayedEndTime, intent.getLongExtra("endTime", 0L))
+    }
+
+    @Test
+    fun viewCalendarEventWithFallback_preserves_start_time_when_end_time_is_missing() {
+        val activity = Robolectric.buildActivity(Activity::class.java).create().get()
+        val mockProvider = mockk<CalendarProviderInterface>()
+        val startTime = 1704067200000L
+        val event = createTestEvent(
+            eventId = 12345L,
+            startTime = startTime,
+            endTime = 0L,
+            instanceStartTime = startTime,
+            instanceEndTime = 0L
+        )
+
+        every { mockProvider.getEvent(any(), event.eventId) } returns mockk<EventRecord>()
+
+        CalendarIntents.viewCalendarEventWithFallback(activity, mockProvider, event)
+
+        val intent = shadowOf(activity).nextStartedActivity
+        assertEquals(startTime, intent.getLongExtra("beginTime", 0L))
+        assertEquals(startTime, intent.getLongExtra("endTime", 0L))
     }
 
     @Test

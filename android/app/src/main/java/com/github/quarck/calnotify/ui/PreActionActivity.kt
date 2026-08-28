@@ -540,6 +540,6 @@ class PreActionActivity : AppCompatActivity() {
     }
     
     private fun viewInCalendar() {
-        CalendarIntents.viewCalendarEvent(this, eventId)
+        CalendarIntents.viewCalendarEvent(this, createEventRecord(0, 0))
     }
 }

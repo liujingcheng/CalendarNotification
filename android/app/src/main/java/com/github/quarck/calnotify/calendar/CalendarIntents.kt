@@ -32,33 +32,31 @@ object CalendarIntents {
 
     private const val LOG_TAG = "CalendarIntents"
 
-    private fun intentForAction(action: String, eventId: Long): Intent {
-
-        val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId);
+    private fun intentForAction(
+        action: String,
+        eventId: Long,
+        startTime: Long = 0L,
+        endTime: Long = 0L
+    ): Intent {
+        val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         val intent = Intent(action).setData(uri)
 
-        return intent
-    }
-
-    private fun intentForAction(action: String, event: EventAlertRecord): Intent {
-
-        val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.eventId);
-        val intent = Intent(action).setData(uri)
-
-        // Xiaomi Calendar does not reliably resolve the date/time from an event URI
-        // alone. Always include the displayed occurrence times, falling back to the
-        // event's DTSTART/DTEND when no instance-specific values are available.
-        val startTime = event.displayedStartTime
-        val endTime = event.displayedEndTime
-
-        if (startTime > 0L && endTime > startTime) {
-            DevLog.debug(LOG_TAG, "Adding event start / end for event ${event.eventId}, start: $startTime, end: $endTime")
+        // Xiaomi Calendar does not reliably resolve the date/time from an event URI.
+        // It also allows alarm-style events without a usable end time. Always pass a
+        // valid begin time, and use it as the end-time fallback instead of dropping
+        // both extras (which Xiaomi displays as 1970-01-01).
+        if (startTime > 0L) {
+            val effectiveEndTime = if (endTime >= startTime) endTime else startTime
+            DevLog.debug(LOG_TAG, "Adding event start / end for event $eventId, start: $startTime, end: $effectiveEndTime")
             intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTime)
-            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime)
+            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, effectiveEndTime)
         }
 
         return intent
     }
+
+    private fun intentForAction(action: String, event: EventAlertRecord): Intent =
+        intentForAction(action, event.eventId, event.displayedStartTime, event.displayedEndTime)
 
     fun calendarViewIntent(context: Context, event: EventAlertRecord)
             = intentForAction(Intent.ACTION_VIEW, event)
@@ -66,8 +64,8 @@ object CalendarIntents {
     fun viewCalendarEvent(context: Context, event: EventAlertRecord)
             = context.startActivity(intentForAction(Intent.ACTION_VIEW, event))
 
-    fun viewCalendarEvent(context: Context, eventId: Long)
-            = context.startActivity(intentForAction(Intent.ACTION_VIEW, eventId))
+    fun viewCalendarEvent(context: Context, eventId: Long, startTime: Long, endTime: Long)
+            = context.startActivity(intentForAction(Intent.ACTION_VIEW, eventId, startTime, endTime))
 
     /**
      * Opens calendar at a specific time (fallback when event not found).
