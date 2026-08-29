@@ -19,4 +19,10 @@ class XiaomiAlarmSoundFallbackTest {
     fun `limits fallback alarm sound to two minutes`() {
         assertEquals(120_000L, XiaomiAlarmSoundFallback.MAX_PLAY_DURATION_MS)
     }
+
+    @Test
+    fun `checks promptly for dismissed alarm notification`() {
+        assertEquals(1_000L, XiaomiAlarmSoundFallback.NOTIFICATION_MONITOR_INITIAL_DELAY_MS)
+        assertEquals(250L, XiaomiAlarmSoundFallback.NOTIFICATION_MONITOR_INTERVAL_MS)
+    }
 }

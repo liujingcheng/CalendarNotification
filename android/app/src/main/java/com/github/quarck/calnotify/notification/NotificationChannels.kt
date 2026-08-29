@@ -19,6 +19,7 @@
 
 package com.github.quarck.calnotify.notification
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
@@ -99,6 +100,7 @@ object NotificationChannels {
         ).apply {
             description = context.getString(R.string.notification_channel_default_desc)
             group = GROUP_ID_MAIN
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             enableVibration(true)
             enableLights(true)
         }
@@ -111,6 +113,7 @@ object NotificationChannels {
         ).apply {
             description = context.getString(R.string.notification_channel_reminders_desc)
             group = GROUP_ID_MAIN
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             enableVibration(true)
             enableLights(true)
         }
@@ -123,6 +126,7 @@ object NotificationChannels {
         ).apply {
             description = context.getString(R.string.notification_channel_alarm_desc)
             group = GROUP_ID_ALARM
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             enableVibration(true)
             enableLights(true)
             setSound(alarmSound, alarmAudioAttributes)
@@ -136,6 +140,7 @@ object NotificationChannels {
         ).apply {
             description = context.getString(R.string.notification_channel_alarm_reminders_desc)
             group = GROUP_ID_ALARM
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             enableVibration(true)
             enableLights(true)
             setSound(alarmSound, alarmAudioAttributes)
@@ -149,6 +154,7 @@ object NotificationChannels {
         ).apply {
             description = context.getString(R.string.notification_channel_silent_desc)
             group = GROUP_ID_SILENT
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             enableVibration(false)
             setSound(null, null)
         }

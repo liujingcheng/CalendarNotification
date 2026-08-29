@@ -32,6 +32,9 @@ class NotificationActionDismissService : IntentService("NotificationActionDismis
 
     override fun onHandleIntent(intent: Intent?) {
         DevLog.debug(LOG_TAG, "onHandleIntent")
+        // Stop the Xiaomi alarm fallback immediately instead of waiting for the
+        // event database update and notification refresh to complete.
+        XiaomiAlarmSoundFallback.stop()
 
         if (intent != null) {
 

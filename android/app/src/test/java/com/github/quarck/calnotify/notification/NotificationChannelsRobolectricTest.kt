@@ -19,6 +19,7 @@
 
 package com.github.quarck.calnotify.notification
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -186,6 +187,22 @@ class NotificationChannelsRobolectricTest {
         val channel = notificationManager.getNotificationChannel(NotificationChannels.CHANNEL_ID_ALARM_REMINDERS)
         assertEquals(AudioAttributes.USAGE_ALARM, channel?.audioAttributes?.usage)
         assertNotNull("Alarm reminders channel should have a sound", channel?.sound)
+    }
+
+    @Test
+    fun `channels allow full content on lockscreen`() {
+        NotificationChannels.createChannels(context)
+
+        listOf(
+            NotificationChannels.CHANNEL_ID_DEFAULT,
+            NotificationChannels.CHANNEL_ID_REMINDERS,
+            NotificationChannels.CHANNEL_ID_ALARM,
+            NotificationChannels.CHANNEL_ID_ALARM_REMINDERS,
+            NotificationChannels.CHANNEL_ID_SILENT
+        ).forEach { channelId ->
+            val channel = notificationManager.getNotificationChannel(channelId)
+            assertEquals(Notification.VISIBILITY_PUBLIC, channel?.lockscreenVisibility)
+        }
     }
 
     @Test

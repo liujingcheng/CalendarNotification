@@ -98,6 +98,8 @@ open class EventNotificationManager : EventNotificationManagerInterface {
 
     override fun onEventsDismissed(context: Context, formatter: EventFormatterInterface, events: Collection<EventAlertRecord>, postNotifications: Boolean, hasActiveEvents: Boolean) {
 
+        XiaomiAlarmSoundFallback.stop()
+
         for (event in events) {
             removeNotification(context, event.notificationId)
         }
@@ -143,6 +145,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
     }
 
     override fun onAllEventsSnoozed(context: Context) {
+        XiaomiAlarmSoundFallback.stop()
         context.notificationManager.cancelAll()
     }
 
@@ -518,7 +521,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                         .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
                         .setNumber(numEvents)
                         .setShowWhen(false)
-                        .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         if (shouldPlayAndVibrate) {
             if (notificationsSettings.ringtoneUri != null
@@ -528,7 +531,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
 
                 if (notificationsSettings.useAlarmStreamForEverything || hasAlarms) {
                     builder.setSound(notificationsSettings.ringtoneUri, AudioManager.STREAM_ALARM)
-                    XiaomiAlarmSoundFallback.play(context)
+                    XiaomiAlarmSoundFallback.play(context, Consts.NOTIFICATION_ID_COLLAPSED)
                 }
                 else
                     builder.setSound(notificationsSettings.ringtoneUri)
@@ -941,7 +944,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                 .setShowWhen(false)
                 .setOnlyAlertOnce(true)
                 .setNumber(numTotalEvents)
-                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         if (numTotalEvents > 1) {
             groupBuilder.setSmallIcon(R.drawable.stat_notify_calendar_multiple)
@@ -1093,7 +1096,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                         else
                             NotificationCompat.CATEGORY_EVENT
                 )
-                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         if (notificationSettings.useBundledNotifications) {
             builder.setGroup(NOTIFICATION_GROUP)
@@ -1351,7 +1354,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
 
             if (notificationSettings.useAlarmStreamForEverything || event.isAlarm || forceAlarmStream) {
                 builder.setSound(notificationSettings.ringtoneUri, AudioManager.STREAM_ALARM)
-                XiaomiAlarmSoundFallback.play(ctx)
+                XiaomiAlarmSoundFallback.play(ctx, event.notificationId)
             }
             else
                 builder.setSound(notificationSettings.ringtoneUri)
@@ -1563,7 +1566,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                         .setCategory(
                                 NotificationCompat.CATEGORY_EVENT
                         )
-                        .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         val notificationSettings = settings.loadNotificationSettings()
 
@@ -1606,7 +1609,7 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                 .setShowWhen(false)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setLights(Consts.DEFAULT_LED_COLOR, Consts.LED_DURATION_ON, Consts.LED_DURATION_OFF)
-                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         val notification = builder.build()
 
