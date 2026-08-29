@@ -64,7 +64,11 @@
         <Button
             android:id="@+id/notification_snooze"
             style="@style/NotificationSnoozeButton"
-            android:layout_width="52dp"
-            android:text="@string/snooze" />
+            android:text="@string/snooze_short" />
+        <ImageButton
+            android:id="@+id/notification_stop_alarm"
+            style="@style/NotificationStopAlarmButton"
+            android:contentDescription="@string/stop_alarm"
+            android:src="@drawable/ic_notification_stop_alarm" />
     </LinearLayout>
 </LinearLayout>
