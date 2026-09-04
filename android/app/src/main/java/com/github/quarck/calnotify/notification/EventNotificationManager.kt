@@ -1136,16 +1136,23 @@ open class EventNotificationManager : EventNotificationManagerInterface {
             val forceTomorrow: Boolean = false
         )
 
+        val compactFirstRowSpecs = listOf(
+            CompactSnoozeSpec("10m", duration = 10L * 60L * 1000L),
+            CompactSnoozeSpec("15m", duration = 15L * 60L * 1000L),
+            CompactSnoozeSpec("30m", duration = 30L * 60L * 1000L),
+            CompactSnoozeSpec("1h", duration = 1L * 60L * 60L * 1000L)
+        )
         val compactSecondRowSpecs = listOf(
-            CompactSnoozeSpec("1h", duration = 1L * 60L * 60L * 1000L),
             CompactSnoozeSpec("2h", duration = 2L * 60L * 60L * 1000L),
             CompactSnoozeSpec("3h", duration = 3L * 60L * 60L * 1000L),
+            CompactSnoozeSpec("4h", duration = 4L * 60L * 60L * 1000L),
+            CompactSnoozeSpec("1d", duration = 24L * 60L * 60L * 1000L),
             CompactSnoozeSpec("A3", hourOfDay = 15),
             CompactSnoozeSpec("E8", hourOfDay = 20),
-            CompactSnoozeSpec("T10", hourOfDay = 10, forceTomorrow = true),
-            CompactSnoozeSpec("1d", duration = 24L * 60L * 60L * 1000L)
+            CompactSnoozeSpec("T10", hourOfDay = 10, forceTomorrow = true)
         )
-        val compactSecondRowPendingIntents = compactSecondRowSpecs.mapIndexed { index, spec ->
+        val compactSpecs = compactFirstRowSpecs + compactSecondRowSpecs
+        val compactPendingIntents = compactSpecs.mapIndexed { index, spec ->
             val intent = if (spec.duration != null) {
                 defaultSnoozeIntent(
                     ctx,
@@ -1202,8 +1209,8 @@ open class EventNotificationManager : EventNotificationManagerInterface {
                         event.notificationId * EVENT_CODES_TOTAL + EVENT_CODE_STOP_ALARM_OFFSET
                 )
 
-        // MIUI hides standard notification actions. Keep four configured presets
-        // beside the title and put the fixed longer/clock-time shortcuts below.
+        // MIUI hides standard notification actions. Keep the most useful short
+        // delays beside the title and the longer/clock-time shortcuts below.
         val compactFirstRowButtonIds = intArrayOf(
                 R.id.notification_snooze_0,
                 R.id.notification_snooze_1,
@@ -1233,20 +1240,16 @@ open class EventNotificationManager : EventNotificationManagerInterface {
             }
 
             compactFirstRowButtonIds.forEachIndexed { index, buttonId ->
-                if (index >= snoozePresetPendingIntents.size) {
-                    setViewVisibility(buttonId, View.GONE)
-                    return@forEachIndexed
-                }
-
-                val preset = snoozePresets[index]
-                val presetPendingIntent = snoozePresetPendingIntents[index]
-                setTextViewText(buttonId, PreferenceUtils.formatSnoozePreset(preset).lowercase(Locale.ROOT))
-                setOnClickPendingIntent(buttonId, presetPendingIntent)
+                setTextViewText(buttonId, compactFirstRowSpecs[index].label)
+                setOnClickPendingIntent(buttonId, compactPendingIntents[index])
             }
 
             compactSecondRowButtonIds.forEachIndexed { index, buttonId ->
                 setTextViewText(buttonId, compactSecondRowSpecs[index].label)
-                setOnClickPendingIntent(buttonId, compactSecondRowPendingIntents[index])
+                setOnClickPendingIntent(
+                        buttonId,
+                        compactPendingIntents[compactFirstRowSpecs.size + index]
+                )
             }
         }
         builder.setCustomContentView(compactNotification)
@@ -1699,13 +1702,13 @@ open class EventNotificationManager : EventNotificationManagerInterface {
         const val EVENT_CODE_DELETE_OFFSET = 2
         const val EVENT_CODE_OPEN_OFFSET = 3
         const val EVENT_CODE_DEFAULT_SNOOOZE0_OFFSET = 4
-        // Configured presets occupy offsets 4 through 14. The seven compact
-        // second-row actions use 15 through 21; keep mute and stop outside both ranges.
+        // Configured presets occupy offsets 4 through 14. The eleven compact
+        // actions use 15 through 25; keep mute and stop outside both ranges.
         const val EVENT_CODE_COMPACT_SNOOOZE0_OFFSET = 15
-        const val EVENT_CODE_MUTE_TOGGLE_OFFSET = 22
-        const val EVENT_CODE_STOP_ALARM_OFFSET = 23
+        const val EVENT_CODE_MUTE_TOGGLE_OFFSET = 26
+        const val EVENT_CODE_STOP_ALARM_OFFSET = 27
         const val EVENT_CODE_DEFAULT_SNOOOZE_MAX_ITEMS = Consts.MAX_SUPPORTED_PRESETS
-        const val EVENT_CODES_TOTAL = 24
+        const val EVENT_CODES_TOTAL = 28
 
         const val MAIN_ACTIVITY_EVERYTHING_COLLAPSED_CODE = 0
         const val MAIN_ACTIVITY_NUM_NOTIFICATIONS_COLLAPSED_CODE = 1
